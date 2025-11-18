@@ -11,6 +11,10 @@ const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Set view engine for EJS templates
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 
 
 

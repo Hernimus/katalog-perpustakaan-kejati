@@ -4,7 +4,7 @@
   "description": "Web catalog for books using Node.js and Express",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "npm run client-build && node app.js",
     "dev": "set PORT=5000 && nodemon app.js",
     "client": "set PORT=3000 && npm start --prefix client",
     "client-build": "npm run build --prefix client",
