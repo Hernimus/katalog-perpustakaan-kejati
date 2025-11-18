@@ -1,0 +1,30 @@
+.footer {
+  font-size: 0.95rem;
+}
+
+.footer h5 {
+  color: #ffffff;
+}
+
+.footer a:hover {
+  color: #ffc107; /* efek hover kuning */
+  text-decoration: none;
+}
+
+.footer-bottom {
+  background-color: #fcfeff !important; /* biru tua */
+}
+
+@media (max-width: 768px) {
+  .footer {
+    text-align: center;
+  }
+}
+
+.footer small {
+  color: #000000;
+}
+
+.container {
+  max-width: 1000px;
+}

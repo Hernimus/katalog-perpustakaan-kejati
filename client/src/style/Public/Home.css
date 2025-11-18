@@ -1,0 +1,194 @@
+.hero-section {
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.keunggulan-section {
+  background: linear-gradient(135deg, #2c3e50, #000);
+}
+
+footer {
+  font-size: 0.9rem;
+}
+
+.accordion-button {
+  font-weight: 500;
+}
+
+.accordion-button:not(.collapsed) {
+  color: #000;
+  background-color: #ffde59;
+}
+
+img.img-fluid {
+  transition: transform 0.3s ease;
+}
+
+img.img-fluid:hover {
+  transform: scale(1.05);
+}
+
+
+/* === UMUM (default desktop) === */
+.hero-carousel h1 {
+  font-size: 2.8rem;
+}
+
+.hero-carousel p {
+  font-size: 1.25rem;
+}
+
+.hero-carousel .btn {
+  font-size: 1.1rem;
+  padding: 0.75rem 2rem;
+}
+
+.fasilitas-section h5 {
+  font-size: 1.2rem;
+}
+
+/* === UNTUK TABLET (≤992px) === */
+@media (max-width: 992px) {
+  .hero-carousel h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-carousel p {
+    font-size: 1.1rem;
+  }
+
+  .hero-carousel .btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.5rem;
+  }
+
+  .fasilitas-section .card-body {
+    padding: 1.2rem;
+  }
+
+  footer {
+    font-size: 0.85rem;
+  }
+}
+
+/* === UNTUK HP (≤576px) === */
+@media (max-width: 576px) {
+  .hero-carousel h1 {
+    font-size: 1.6rem;
+  }
+
+  .hero-carousel p {
+    font-size: 1rem;
+  }
+
+  .hero-carousel .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1.2rem;
+  }
+
+  .fasilitas-section h2 {
+    font-size: 1.4rem;
+  }
+
+  .fasilitas-section h5 {
+    font-size: 1rem;
+  }
+
+  .accordion-button {
+    font-size: 0.9rem;
+  }
+
+  .accordion-body {
+    font-size: 0.85rem;
+  }
+
+  footer {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .ratio.ratio-16x9 {
+    height: 200px;
+  }
+}
+
+/* ====== BAGIAN UTAMA ====== */
+.fasilitas-section {
+  padding: 30px 0;
+}
+
+/* ====== KARTU ====== */
+.fasilitas-card {
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.fasilitas-image {
+  width: 100%;
+  max-width: 500px;
+  height: 180px;
+}
+
+/* ====== TEKS ====== */
+.fasilitas-text h4 {
+  font-size: 1.25rem;
+  color: #222;
+}
+
+.fasilitas-text p {
+  font-size: 1rem;
+  text-align: justify ;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* ====== RESPONSIF ====== */
+@media (max-width: 991px) {
+
+  .fasilitas-section {
+    padding:  20PX;
+  }
+
+  .fasilitas-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .fasilitas-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  .fasilitas-image {
+    height: auto;
+  }
+
+  .fasilitas-text h4 {
+    font-size: 1.15rem;
+  }
+
+  .fasilitas-text p {
+    font-size: 0.95rem;
+    text-align: justify;
+  }
+}
+
+@media (max-width: 576px) {
+  .fasilitas-section {
+    padding: 15px;
+  }
+
+  .fasilitas-text h4 {
+    font-size: 1rem;
+  }
+
+  .fasilitas-text p {
+    font-size: 0.9rem;
+  }
+}

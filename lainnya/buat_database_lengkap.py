@@ -3,7 +3,7 @@ import csv
 import sqlite3
 
 NAMA_FILE_CSV = "KATALOG_2014A.csv"
-NAMA_FILE_CSV = "D:\Dokumen\Kerja Praktek\web_katalog\lainnya\KATALOG_2014A.csv"
+NAMA_FILE_CSV = "D:\Dokumen\Kerja Praktek\web_katalog\KATALOG_2014A - Copy (4).csv"
 NAMA_DATABASE = "perpustakaan.db"
 
 # 1. Baca data dari file CSV

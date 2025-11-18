@@ -1,0 +1,168 @@
+Styling untuk halaman katalog
+
+.page-btn {
+  border: none;
+  background: #eee;
+  padding: 5px 10px;
+  margin: 0 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.page-btn:hover {
+  background: #ddd;
+}
+
+.page-btn.active {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.page-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.katalog-container {
+  padding: 20px;
+}
+
+.katalog-table {
+  margin: 20px auto; /* ✅ Biar tabel di tengah */
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 1000px; /* ✅ Batas maksimal tabel */
+  table-layout: fixed; /* ✅ Membatasi kolom agar tidak melebar */
+}
+
+/* Header */
+.katalog-table th {
+  background: #f2f2f2;
+  padding: 8px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  font-size: 13px;
+}
+
+/* Sel */
+.katalog-table td {
+  padding: 6px;
+  border-top: 1px solid #ddd;
+  font-size: 12px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ✅ Atur lebar kolom */
+.katalog-table th:nth-child(1),
+.katalog-table td:nth-child(1) {
+  width: 250px; /* Judul Buku */
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Potong teks panjang dengan "..." */
+}
+
+.katalog-table th:nth-child(2),
+.katalog-table td:nth-child(2) {
+  width: 150px; /* Pengarang */
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.katalog-table th:nth-child(3),
+.katalog-table td:nth-child(3) {
+  width: 150px; /* Penerbit */
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Kolom lain biarkan fleksibel */
+.katalog-table th:nth-child(n+4),
+.katalog-table td:nth-child(n+4) {
+  width: auto;
+}
+
+
+.katalog-pagination {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.limit-select {
+  margin-left: 5px;
+  padding: 3px;
+}
+
+/* Animasi fade-in
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} */
+
+/* Modal overlay (latar buram) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* layar buram */
+  backdrop-filter: blur(4px); /* efek blur */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Kotak konten modal */
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  min-width: 400px;
+  max-width: 600px;
+  position: relative;
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Tombol X (close) */
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Animasi muncul */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

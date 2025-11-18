@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+
+body {
+  padding-top: 70px; /* agar konten tidak tertutup navbar */
+  background-color: #f9f9f9;
+}
+
+footer {
+  margin-top: auto;
+}

@@ -1,0 +1,238 @@
+
+
+/* ======== DESKTOP NAVBAR ======== */
+.navbar {
+  transition: all 0.3s ease;
+}
+
+.background {
+  background-color: #b1971c; /* warna latar saat discroll */
+}
+
+/* Warna default link */
+.nav-link {
+  color: white !important;
+  font-weight: bold;
+  margin-left: 15px;
+  font-size: 1.1rem;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Garis bawah animasi */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #ffffff;
+  transition: width 0.3s ease;
+}
+
+/* Saat hover atau aktif */
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Saat navbar transparan (awal halaman) */
+.navbar.navbar-dark .nav-link.active {
+  color: #ffeb7a !important; /* kuning muda agar terlihat di background gelap */
+}
+
+/* Saat navbar memiliki background (scroll / pindah halaman) */
+.navbar.navbar-light .nav-link.active {
+  color: #041d05 !important; /* hijau tua agar kontras dengan background kuning */
+}
+
+/* Tambahkan efek hover */
+.navbar.navbar-dark .nav-link:hover {
+  color: #fff176 !important;
+}
+.navbar.navbar-light .nav-link:hover {
+  color: #0a2e0a !important;
+}
+
+.txt-clr {
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.89);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 1049;
+}
+
+.menu-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ======== MOBILE MENU ======== */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 82%;
+  max-width: 340px;
+  height: 100vh;
+  background-color: #b1971c;
+  color: white;
+  transition: right 0.4s ease;
+  z-index: 1050;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.mobile-menu.open {
+  right: 0;
+}
+
+
+/* ======== HEADER DAN TOMBOL CLOSE ======== */
+.mobile-menu-header {
+  border-bottom: #fff solid;
+  margin: -15px -24px 0 -24px; /* menutupi padding container menu */
+  padding: 18.5px 24px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ======== DAFTAR MENU ======== */
+.NavMob {
+  font-size: 19px;
+}
+
+.mobile-menu-list li {
+  margin: 1rem 0;
+}
+.mobile-menu-list a {
+  color: #fff;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.mobile-menu-list a:hover {
+  color: #ffc107;
+}
+
+.mobile-menu-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.mobile-menu-item:hover,
+.mobile-menu-item.active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-icon {
+  font-size: 1.3rem;
+  color: #bfbfbf;
+}
+
+
+.marquee-wrapper {
+  width: 22 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marqueeScroll 8s linear infinite;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* === HP (≤576px) === */
+@media (max-width: 576px) {
+
+  .navbar-brand img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .navbar-brand span {
+    font-size: 0.8rem;
+    line-height: 1.1rem;
+  }
+
+  .navbar-toggler {
+    transform: scale(0.9);
+  }
+
+  /* Mobile Menu */
+  .mobile-menu {
+    padding: 1rem;
+  }
+
+  .mobile-menu-header {
+    padding: 20px;
+  }
+
+  .marquee-wrapper {
+    width: 90%;
+  }
+
+  .mobile-menu-item {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+
+  .menu-icon {
+    font-size: 1rem;
+  }
+
+  .close-btn {
+    font-size: 1.7rem;
+  }
+}
+
+/* === HP Kecil (≤400px) === */
+@media (max-width: 400px) {
+  .mobile-menu-item span{
+    font-size: 0.8  rem;
+  }
+
+  .menu-icon {
+    font-size: 0.9rem;
+  }
+}

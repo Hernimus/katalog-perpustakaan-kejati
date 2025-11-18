@@ -1,0 +1,147 @@
+/* ManageAdmins.css - Matching Public Page Styles */
+
+.manage-admins .admins-container {
+  padding: 2rem 0;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.manage-admins .admins-hero {
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.manage-admins .admins-hero h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.manage-admins .admins-hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.manage-admins .admins-section {
+  background: white;
+  padding: 2rem;
+  margin: 2rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.manage-admins .admins-section h2 {
+  color: #343a40;
+  margin-bottom: 1.5rem;
+}
+
+.manage-admins .add-admin-btn {
+  background-color: #28a745;
+  border-color: #28a745;
+  margin-bottom: 1.5rem;
+}
+
+.manage-admins .add-admin-btn:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.manage-admins .table-responsive {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.manage-admins .table th {
+  background-color: #09c6ccb4;
+  color: white;
+  font-weight: 600;
+}
+
+.manage-admins .table td {
+  vertical-align: middle;
+}
+
+.manage-admins .btn-action {
+  margin-right: 0.5rem;
+}
+
+/* Modal Styles */
+.manage-admins .modal-content {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.manage-admins .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.manage-admins .modal-title {
+  color: #343a40;
+}
+
+.manage-admins .modal-body {
+  padding: 2rem;
+}
+
+.manage-admins .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.manage-admins .form-control {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+}
+
+.manage-admins .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.manage-admins .modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .manage-admins .admins-hero h1 {
+    font-size: 2rem;
+  }
+
+  .manage-admins .admins-hero p {
+    font-size: 1rem;
+  }
+
+  .manage-admins .admins-section {
+    padding: 1rem;
+  }
+
+  .manage-admins .table-responsive {
+    font-size: 0.9rem;
+  }
+
+  .manage-admins .modal-body {
+    padding: 1rem;
+  }
+}
+
+.py-hero {
+  padding: 5rem 1rem;
+  color: white;
+  text-align: center;
+}
+
+.admins-section {
+  margin-top: 2rem;
+}
+
+.rak-btn {
+  margin: 0.25rem;
+}
+

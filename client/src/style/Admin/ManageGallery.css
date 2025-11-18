@@ -1,0 +1,43 @@
+.rak-page {
+  padding: 2rem;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+}
+
+.rak-title {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.rak-image-thumb {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.rak-preview {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.rak-image-preview {
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rak-image-thumb {
+  width: 250px;       
+  height: 100%;       
+  object-fit: cover;  /* crop nicely instead of stretching */
+  border-radius: 8px; /* rounded corners for aesthetics */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.rak-image-thumb:hover {
+  transform: scale(1.05);
+}

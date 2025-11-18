@@ -1,0 +1,352 @@
+body {
+  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+  color: #333;
+  line-height: 1.7;
+  background-color: #fff;
+}
+
+section.text-white {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+section.text-white h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: 1px;
+}
+
+section.text-white p {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  opacity: 0.9;
+}
+
+h2 {
+  font-weight: 600;
+  color: #1a2b49;
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+}
+
+p.text-muted {
+  color: #555 !important;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.container img {
+  border-radius: 10px;
+}
+
+.bg-light {
+  background-color: #f8fafc !important;
+}
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  color: #1a2b49;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.card-text {
+  color: #555;
+  font-size: 1.05rem;
+}
+
+/* === GALERI === */
+.galeri img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 10px;
+}
+
+.galeri img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Swiper pagination dan navigasi */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #1a2b49;
+  transition: color 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #007bff;
+}
+
+.swiper-pagination-bullet {
+  background-color: #1a2b49 !important;
+  opacity: 0.5;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #007bff !important;
+  opacity: 1;
+}
+
+/* === FULLSCREEN MODAL === */
+.fullscreen-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 10, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(3px);
+  cursor: default;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Gambar fullscreen dengan animasi zoom */
+.fullscreen-image {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+  animation: zoomIn 0.4s ease forwards;
+  transition: transform 0.3s ease-in-out;
+  cursor: zoom-out;
+}
+
+/* Tombol close (X) */
+.fullscreen-modal .close-btn {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  font-size: 2.2rem;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 2100;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.fullscreen-modal .close-btn:hover {
+  transform: scale(1.2);
+  color: #ff4b4b;
+}
+
+/* Animasi fadeIn (latar belakang muncul halus) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animasi zoom-in (gambar membesar halus saat muncul) */
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animasi zoom-out (opsional, jika nanti ingin animasi keluar) */
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Responsif */
+@media (max-width: 576px) {
+  .fullscreen-modal .close-btn {
+    top: 15px;
+    right: 20px;
+    font-size: 1.7rem;
+  }
+
+  .fullscreen-image {
+    max-width: 95%;
+    max-height: 80%;
+  }
+}
+
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  section.text-white h1 {
+    font-size: 1.8rem;
+  }
+
+  section.text-white p {
+    font-size: 1rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  p.text-muted {
+    font-size: 0.9rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .card-text {
+    font-size: 0.95rem;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none;
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 576px) {
+  section.text-white h1 {
+    font-size: 1.7rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* ====== BAGIAN UTAMA ====== */
+.layanan-section {
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 60px 0;
+  transition: background 0.3s ease;
+}
+
+.layanan-section h2 {
+  font-size: 2rem;
+  color: #1c1c1c;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.layanan-section p {
+  color: #6c757d;
+}
+
+/* ====== KARTU LAYANAN ====== */
+.layanan-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 30px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.layanan-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: #e0db3f;
+}
+
+.layanan-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 4px;
+  background-color: #e0db3f;
+  transition: width 0.4s ease;
+}
+
+.layanan-card:hover::before {
+  width: 100%;
+}
+
+/* ====== JUDUL DAN ISI ====== */
+.layanan-card h5 {
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+
+
+.layanan-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* ====== ANIMASI SAAT MASUK ====== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.layanan-card {
+  animation: fadeUp 0.8s ease both;
+}
+
+/* ====== RESPONSIVE (HP & TABLET) ====== */
+@media (max-width: 991px) {
+  .layanan-card {
+    padding: 25px 15px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .layanan-section {
+    padding: 40px 15px;
+  }
+
+  .layanan-section h2 {
+    font-size: 1.6rem;
+  }
+
+  .layanan-card h5 {
+    font-size: 1.1rem;
+  }
+
+  .layanan-card p {
+    font-size: 0.9rem;
+    text-align: justify;
+  }
+}

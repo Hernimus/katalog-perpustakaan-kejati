@@ -1,0 +1,22 @@
+# simpan sebagai: buat_tabel_gallery.py
+import sqlite3
+
+# --- Konfigurasi ---
+NAMA_DATABASE = "perpustakaan.db"
+
+# --- Hubungkan ke database ---
+conn = sqlite3.connect(NAMA_DATABASE)
+cursor = conn.cursor()
+
+# --- Buat tabel gallery ---
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS gallery (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        filename TEXT NOT NULL
+    )
+''')
+
+conn.commit()
+conn.close()
+
+print("✅ Tabel 'gallery' berhasil dibuat atau sudah ada di database.")

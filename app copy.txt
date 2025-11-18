@@ -1,0 +1,475 @@
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true,
+}));
+
+// Middleware
+app.use(express.json());
+app.use(session({
+  secret: 'your-secret-key', // Change this to a secure key
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
+
+// Serve static files from public folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Remove serving React build for development mode to separate React and Node.js
+
+// Serve React app static files
+// app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+// Connect to SQLite database
+const db = new sqlite3.Database('perpustakaan.db', (err) => {
+  if (err) {
+    console.error('Error opening database:', err.message);
+  } else {
+    console.log('Connected to SQLite database.');
+  }
+});
+
+// API Routes
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  db.get('SELECT * FROM admin WHERE username = ?', [username], (err, row) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
+    if (!row) {
+      return res.status(401).json({ success: false, message: 'Invalid username or password' });
+    }
+    bcrypt.compare(password, row.password, (err, result) => {
+      if (result) {
+        req.session.user = { username: row.username };
+        res.json({ success: true });
+      } else {
+        res.status(401).json({ success: false, message: 'Invalid username or password' });
+      }
+    });
+  });
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      res.status(500).json({ success: false });
+    } else {
+      res.json({ success: true });
+    }
+  });
+});
+
+app.get('/api/admin', (req, res) => {
+  if (req.session.user) {
+    res.json({ message: 'Welcome to admin area', user: req.session.user });
+  } else {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
+});
+
+// Route: Home page - list all books or search results
+app.get('/', (req, res) => {
+  const searchQuery = req.query.q;
+  let sql = 'SELECT * FROM buku';
+  let params = [];
+
+  if (searchQuery) {
+    sql += ` WHERE judul_buku LIKE ? OR pengarang LIKE ? OR penerbit LIKE ?`;
+    const likeQuery = '%' + searchQuery + '%';
+    params = [likeQuery, likeQuery, likeQuery];
+  }
+
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      console.error('Error querying database:', err.message);
+      res.status(500).send('Database error');
+    } else {
+      res.render('index', { books: rows, searchQuery: searchQuery || '' });
+    }
+  });
+});
+
+// API route: Admin login
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password required' });
+  }
+  db.get('SELECT * FROM admin WHERE username = ?', [username], (err, row) => {
+    if (err) {
+      console.error('Database error:', err.message);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+    if (!row) {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+    // Compare password with bcrypt
+    const bcrypt = require('bcryptjs');
+    if (bcrypt.compareSync(password, row.password)) {
+      req.session.user = { id: row.id, username: row.username };
+      return res.json({ message: 'Login successful' });
+    } else {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+  });
+});
+
+// API route: Admin logout
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.json({ message: 'Logged out' });
+  });
+});
+
+// API route: Check session
+app.get('/api/check_session', (req, res) => {
+  if (req.session.user) {
+    res.json({ authenticated: true });
+  } else {
+    res.status(401).json({ authenticated: false });
+  }
+});
+
+// API route: Get katalog with pagination, search, filter
+app.get('/api/katalog', (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 25;
+  const offset = (page - 1) * limit;
+
+  let sql = 'SELECT * FROM buku';
+  let params = [];
+  let whereClauses = [];
+
+  if (req.query.q) {
+    whereClauses.push('(judul_buku LIKE ? OR pengarang LIKE ? OR isbn LIKE ?)');
+    const like = '%' + req.query.q + '%';
+    params.push(like, like, like);
+  }
+
+  if (req.query.rak) {
+    whereClauses.push('rak_buku = ?');
+    params.push(req.query.rak);
+  }
+
+  if (whereClauses.length) {
+    sql += ' WHERE ' + whereClauses.join(' AND ');
+  }
+
+  if (req.query.sort) {
+    sql += ' ORDER BY ' + req.query.sort + ' ' + (req.query.order === 'desc' ? 'DESC' : 'ASC');
+  }
+
+  sql += ' LIMIT ? OFFSET ?';
+  params.push(limit, offset);
+
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    let countSql = 'SELECT COUNT(*) as total FROM buku';
+    if (whereClauses.length) {
+      countSql += ' WHERE ' + whereClauses.join(' AND ');
+    }
+
+    db.get(countSql, params.slice(0, -2), (err, countRow) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      const totalPages = Math.ceil(countRow.total / limit);
+      res.json({ data: rows, total_pages: totalPages });
+    });
+  });
+});
+
+// API route: Get unique rak + tema mapping
+app.get('/api/rak', (req, res) => {
+  const RAK_TEMA = {
+    "10A": "Ensiklopedia",
+    "11B": "Hukum Perdagangan",
+    "1A": "Ensiklopedia",
+    "1B": "Politik",
+    "1C": "Kamus",
+    "1D": "Cyber Crime",
+    "1E": "Hukum Islam",
+    "1F": "Hukuman Internasional",
+    "1G": "Hukum Lingkungan",
+    "1H": "Kamus",
+    "2B": "Pidana Khusus",
+    "2C": "Acara Pidana",
+    "2F": "Peradilan Militer",
+    "3A": "Perdata",
+    "3B": "Acara Perdata",
+    "3C": "Hukum Perusahaan",
+    "3E": "Hukum Pertahanan",
+    "3F": "Hukum Dagang",
+    "3G": "Tata Negara",
+    "4B": "Undang-Undang/Peraturan",
+    "4C": "KUHP/KUHAP",
+    "4D": "Kepailitan",
+    "4F": "HAM/PNS",
+    "5B": "Ilmu Hukum",
+    "5C": "Konsumen/PT",
+    "5F": "Perpajakan",
+    "6A": "Komisi Kejaksaan",
+    "6B": "Kejaksaan",
+    "6D": "Kejaksaan Ja",
+    "6E": "Juknis Perkara Pidum",
+    "6G": "Persetujuan MOU",
+    "6H": "Juknis Perkara Pidsus",
+    "7A": "Sastra Islam dan Agama",
+    "7B": "Haki",
+    "7D": "Filsafat",
+    "7E": "Biografi dan Keuangan/Perbankan",
+    "7F": "Hukum Laut dan Manajemen",
+    "7H": "Narkotika",
+    "9F": "Peraturan Pemerintah",
+    "9G": "Undang-Undang",
+    "9H": "Peraturan Presiden",
+    "10B": "Seni dan Sastra",
+    "12A": "Sejarah"
+  };
+
+  db.all(
+    `SELECT DISTINCT rak_buku FROM buku 
+     WHERE rak_buku IS NOT NULL AND rak_buku != '' 
+     ORDER BY rak_buku`,
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      const rakData = rows.map((row) => {
+        const rakCode = row.rak_buku;
+        const tema = RAK_TEMA[rakCode] || "";
+        const label = tema ? `${rakCode} (${tema})` : rakCode;
+        return { value: rakCode, label };
+      });
+
+      res.json(rakData);
+    }
+  );
+});
+
+
+// Middleware to protect admin routes
+function requireAuth(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
+}
+
+// Admin API routes for CRUD
+app.post('/admin/api/buku', requireAuth, (req, res) => {
+  const { judul_buku, pengarang, penerbit, tempat_terbit, tahun, isbn, jilid, edisi, cetakan, jumlah_halaman, rak_buku, jumlah_buku, tinggi_buku, nomor_panggil, inisial, perolehan, harga, keterangan, no_induk } = req.body;
+  db.run(`INSERT INTO buku (judul_buku, pengarang, penerbit, tempat_terbit, tahun, isbn, jilid, edisi, cetakan, jumlah_halaman, rak_buku, jumlah_buku, tinggi_buku, nomor_panggil, inisial, perolehan, harga, keterangan, no_induk) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [judul_buku, pengarang, penerbit, tempat_terbit, tahun, isbn, jilid, edisi, cetakan, jumlah_halaman, rak_buku, jumlah_buku, tinggi_buku, nomor_panggil, inisial, perolehan, harga, keterangan, no_induk], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ id: this.lastID });
+  });
+});
+
+app.put('/admin/api/buku/:id', requireAuth, (req, res) => {
+  const { id } = req.params;
+  const fields = Object.keys(req.body);
+  const values = Object.values(req.body);
+  const setClause = fields.map(field => `${field} = ?`).join(', ');
+  db.run(`UPDATE buku SET ${setClause} WHERE id = ?`, [...values, id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ changes: this.changes });
+  });
+});
+
+app.delete('/admin/api/buku/:id', requireAuth, (req, res) => {
+  const { id } = req.params;
+  db.run('DELETE FROM buku WHERE id = ?', [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ changes: this.changes });
+  });
+});
+
+// API route: Get statistics for admin
+app.get("/api/stats", requireAuth, (req, res) => {
+  // 1) total books
+  db.get("SELECT COUNT(*) AS total FROM buku", [], (err, totalRow) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const totalBooks = totalRow.total;
+
+    // 2) count buku tanpa rak
+    db.get(
+      "SELECT COUNT(*) AS unrecorded FROM buku WHERE rak_buku IS NULL OR TRIM(rak_buku) = ''",
+      [],
+      (err, unrecordedRow) => {
+        if (err) return res.status(500).json({ error: err.message });
+        const unrecordedCount = unrecordedRow.unrecorded;
+
+        // 3) distinct rak yang terisi di kolom rak_buku
+        db.get(
+          "SELECT COUNT(DISTINCT rak_buku) AS distinctRak FROM buku WHERE rak_buku IS NOT NULL AND TRIM(rak_buku) != ''",
+          [],
+          (err, distinctRow) => {
+            if (err) return res.status(500).json({ error: err.message });
+            const distinctRakCount = distinctRow.distinctRak;
+
+            // 4) jumlah buku per rak (untuk rak non-empty)
+            db.all(
+              "SELECT rak_buku, COUNT(*) AS count FROM buku WHERE rak_buku IS NOT NULL AND TRIM(rak_buku) != '' GROUP BY rak_buku",
+              [],
+              (err, rakRows) => {
+                if (err) return res.status(500).json({ error: err.message });
+
+                const rakCounts = {};
+                rakRows.forEach((row) => {
+                  rakCounts[row.rak_buku] = row.count;
+                });
+
+                // 5) emptyRakCount:
+                // hitung rak (distinct rak_buku) yang ada tapi TIDAK punya satupun judul_buku non-empty
+                // logic: group by rak_buku, lalu pakai HAVING untuk memastikan
+                // SUM(CASE WHEN TRIM(COALESCE(judul_buku,'')) <> '' THEN 1 ELSE 0 END) = 0
+                const emptyRakSql = `
+                  SELECT COUNT(*) AS emptyRakCount FROM (
+                    SELECT rak_buku
+                    FROM buku
+                    WHERE rak_buku IS NOT NULL AND TRIM(rak_buku) != ''
+                    GROUP BY rak_buku
+                    HAVING SUM(
+                      CASE WHEN TRIM(COALESCE(judul_buku, '')) <> '' THEN 1 ELSE 0 END
+                    ) = 0
+                  ) AS sub
+                `;
+                db.get(emptyRakSql, [], (err, emptyRow) => {
+                  if (err) return res.status(500).json({ error: err.message });
+                  const emptyRakCount = emptyRow ? emptyRow.emptyRakCount : 0;
+
+                  // akhir: kirim response
+                  res.json({
+                    totalBooks,
+                    unrecordedCount,
+                    distinctRakCount,
+                    emptyRakCount,
+                    rakCounts,
+                  });
+                });
+              }
+            );
+          }
+        );
+      }
+    );
+  });
+});
+
+
+
+
+
+// Example protected admin route
+app.get('/api/admin', requireAuth, (req, res) => {
+  res.json({ message: `Welcome admin ${req.session.user.username}` });
+});
+
+// Admin CRUD routes for admins table
+app.get('/admin/api/admins', requireAuth, (req, res) => {
+  db.all('SELECT id, username FROM admin', [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/admin/api/admins', requireAuth, (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+  bcrypt.hash(password, 10, (err, hashedPassword) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error hashing password' });
+    }
+    db.run('INSERT INTO admin (username, password) VALUES (?, ?)', [username, hashedPassword], function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ id: this.lastID });
+    });
+  });
+});
+
+app.put('/admin/api/admins/:id', requireAuth, (req, res) => {
+  const { id } = req.params;
+  const { username, password } = req.body;
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+  if (password) {
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+      if (err) {
+        return res.status(500).json({ error: 'Error hashing password' });
+      }
+      db.run('UPDATE admin SET username = ?, password = ? WHERE id = ?', [username, hashedPassword, id], function(err) {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json({ changes: this.changes });
+      });
+    });
+  } else {
+    db.run('UPDATE admin SET username = ? WHERE id = ?', [username, id], function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ changes: this.changes });
+    });
+  }
+});
+
+app.delete('/admin/api/admins/:id', requireAuth, (req, res) => {
+  const { id } = req.params;
+  db.run('DELETE FROM admin WHERE id = ?', [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ changes: this.changes });
+  });
+});
+
+/*
+// Serve React app for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
+
+// Catch-all handler: send back React's index.html file for any unmatched routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
+*/
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+

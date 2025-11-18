@@ -1,0 +1,58 @@
+CREATE TABLE buku_backup AS SELECT * FROM buku;
+
+ALTER TABLE buku RENAME TO buku_old;
+
+CREATE TABLE buku (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    no_induk TEXT,
+    judul_buku TEXT,
+    pengarang TEXT,
+    penerbit TEXT,
+    tempat_terbit TEXT,
+    tahun TEXT,
+    isbn TEXT,
+    jilid TEXT,
+    edisi TEXT,
+    cetakan TEXT,
+    jumlah_halaman TEXT,
+    rak_buku TEXT,
+    jumlah_buku TEXT,
+    tinggi_buku TEXT,
+    nomor_panggil TEXT,
+    inisial TEXT,
+    perolehan TEXT,
+    harga TEXT,
+    keterangan TEXT,
+    FOREIGN KEY (rak_buku) REFERENCES rak_mapping(rak_buku)
+);
+
+
+INSERT OR IGNORE INTO rak_mapping (rak_buku)
+SELECT DISTINCT TRIM(rak_buku)
+FROM buku
+WHERE rak_buku IS NOT NULL AND TRIM(rak_buku) != '';
+
+INSERT INTO buku (
+        no_induk, judul_buku, pengarang, penerbit, tempat_terbit, tahun,
+        isbn, jilid, edisi, cetakan, jumlah_halaman, rak_buku, jumlah_buku,
+        tinggi_buku, nomor_panggil, inisial, perolehan, harga, keterangan
+    )
+    SELECT
+        no_induk, judul_buku, pengarang, penerbit, tempat_terbit, tahun,
+        isbn, jilid, edisi, cetakan, jumlah_halaman,
+        CASE
+            WHEN rak_buku IS NULL OR TRIM(rak_buku) = '' THEN NULL
+            ELSE rak_buku
+        END AS rak_buku,
+        jumlah_buku, tinggi_buku, nomor_panggil, inisial, perolehan, harga, keterangan
+    FROM buku_old;
+
+//check buku tanpa rak_buku
+    SELECT *
+FROM buku_old
+WHERE TRIM(rak_buku) NOT IN (
+    SELECT TRIM(rak_buku)
+    FROM rak_mapping
+)
+OR rak_buku IS NULL
+OR TRIM(rak_buku) = '';

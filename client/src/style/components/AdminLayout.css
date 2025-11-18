@@ -1,0 +1,53 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb; /* light neutral background */
+}
+
+/* Sidebar transition */
+.admin-sidebar {
+  flex-shrink: 0;
+  width: 260px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.admin-sidebar.closed {
+  width: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Main section transitions with sidebar */
+.admin-main {
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+}
+
+/* Navbar should stay at the top */
+.admin-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+/* Center content smoothly */
+.admin-content {
+  width: 95%;
+  max-width: 1600px;
+  margin: 75px auto 60px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+
+
+/* Optional — slightly fade + scale content when sidebar toggles */
+.admin-content.animate {
+  transform: scale(0.98);
+  opacity: 0.95;
+}

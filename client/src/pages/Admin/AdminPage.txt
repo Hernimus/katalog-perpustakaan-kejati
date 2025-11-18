@@ -1,0 +1,618 @@
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
+import Pagination from 'react-bootstrap/Pagination';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import Modal from 'react-bootstrap/Modal';
+import Alert from 'react-bootstrap/Alert';
+import Dropdown from 'react-bootstrap/Dropdown';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+
+import BookDetailModal from "../../components/BookDetailModal.js";
+import BookFormModal from "../../components/BookFormModal.js";
+import RakModal from "../../components/RakModal.js";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../../style/Admin/AdminPage.css";
+import { motion } from "framer-motion";
+
+function AdminPage() {
+  const navigate = useNavigate();
+  const [data, setData] = useState([]);
+  const [query, setQuery] = useState("");
+  const [rakFilter, setRakFilter] = useState("");
+  const [rakList, setRakList] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editBook, setEditBook] = useState(null);
+  const [notification, setNotification] = useState({ show: false, variant: "", message: "" });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteBookId, setDeleteBookId] = useState(null);
+  const [showRakModal, setShowRakModal] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const confirmDelete = (id) => {
+    setDeleteBookId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteBookId !== null) {
+      handleDelete(deleteBookId);
+      setShowDeleteModal(false);
+      setDeleteBookId(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteBookId(null);
+  };
+
+  // Auto-hide notification after 3 seconds
+  useEffect(() => {
+    if (notification.show) {
+      const timer = setTimeout(() => {
+        setNotification({ show: false, variant: "", message: "" });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification.show]);
+
+
+  // Check authentication
+  useEffect(() => {
+    fetch("http://localhost:3000/api/check_session", { credentials: "include" })
+      .then(res => {
+        if (res.status === 401) {
+          navigate("/login");
+        }
+      })
+      .catch(() => {
+        navigate("/login");
+      });
+  }, [navigate]);
+
+  // Fetch rak list
+  useEffect(() => {
+    fetch("http://localhost:3000/api/rak", { credentials: "include" })
+      .then((res) => res.json())
+      .then((json) => setRakList(json))
+      .catch((err) => console.error("Error rak:", err));
+  }, []);
+
+  // Fetch katalog data
+  useEffect(() => {
+    let url = `http://localhost:3000/api/katalog?page=${page}&limit=${limit}`;
+    if (query) url += `&q=${encodeURIComponent(query)}`;
+    if (rakFilter) url += `&rak=${encodeURIComponent(rakFilter)}`;
+
+    fetch(url, { credentials: "include" })
+      .then((res) => res.json())
+      .then((json) => {
+        setData(json.data);
+        setTotalPages(json.total_pages);
+      })
+      .catch((err) => console.error("Error:", err));
+  }, [query, rakFilter, page, limit]);
+
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
+
+  // Dropdown scroll handler
+  useEffect(() => {
+    const handleScroll = () => {
+      if (dropdownRef.current) {
+        const rect = dropdownRef.current.getBoundingClientRect();
+        const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        if (!isVisible) {
+          setShowDropdown(false);
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Rak select handler
+  const handleRakSelect = (rak) => {
+    setRakFilter(rak.value);
+    setShowRakModal(false);
+    setPage(1);
+  };
+
+  // Render page numbers
+  const renderPageNumbers = () => {
+    const pages = [];
+    let start = Math.max(1, page - 2);
+    let end = Math.min(totalPages, page + 2);
+
+    if (start > 1) {
+      pages.push(
+        <button key={1} onClick={() => setPage(1)} className="page-btn">
+          1
+        </button>
+      );
+      if (start > 2) pages.push(<span key="start-dots">...</span>);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => setPage(i)}
+          className={`page-btn ${i === page ? "active" : ""}`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    if (end < totalPages) {
+      if (end < totalPages - 1) pages.push(<span key="end-dots">...</span>);
+      pages.push(
+        <button
+          key={totalPages}
+          onClick={() => setPage(totalPages)}
+          className="page-btn"
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    return pages;
+  };
+
+
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3000/admin/api/buku/${id}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (res.ok) {
+        setNotification({ show: true, variant: "success", message: "Buku berhasil dihapus" });
+        // Reload data
+        let url = `http://localhost:3000/api/katalog?page=${page}&limit=${limit}`;
+        if (query) url += `&q=${encodeURIComponent(query)}`;
+        if (rakFilter) url += `&rak=${encodeURIComponent(rakFilter)}`;
+        fetch(url, { credentials: "include" })
+          .then((res) => res.json())
+          .then((json) => {
+            setData(json.data);
+            setTotalPages(json.total_pages);
+          });
+      } else {
+        setNotification({ show: true, variant: "danger", message: "Gagal menghapus buku" });
+      }
+    } catch (err) {
+      setNotification({ show: true, variant: "danger", message: "Error: " + err });
+    }
+  };
+
+  return (
+    <div className="admin-page">
+          {/* Hero Section */}
+          <section
+            className="admin-hero"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/masthead.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="container py-5">
+              <motion.h1
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                Daftar Katalog Buku (Admin)
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                Kelola koleksi buku Perpustakaan Kejaksaan Tinggi Kalimantan Tengah.
+              </motion.p>
+
+              {/* Search Bar */}
+              <div className="d-none d-md-block mt-4">
+                <div className="search-bar">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Cari judul, pengarang, atau ISBN..."
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      setPage(1);
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Mobile Search */}
+              <div className="d-block d-md-none mt-4">
+                <div className="row g-2 justify-content-center">
+                  <div className="col-12">
+                    <input
+                      type="text"
+                      className="form-control text-center"
+                      placeholder="Cari judul, pengarang, atau ISBN..."
+                      value={query}
+                      onChange={(e) => {
+                        setQuery(e.target.value);
+                        setPage(1);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Filters */}
+          <div className="container">
+            <motion.div
+              className="filters"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
+                <div className="form-group">
+                  <label className="me-2">Tampilkan</label>
+                  <select
+                    className="form-select d-inline-block"
+                    style={{ width: "70px" }}
+                    value={limit}
+                    onChange={(e) => {
+                      setLimit(Number(e.target.value));
+                      setPage(1);
+                    }}
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={75}>75</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className="ms-2">Entry</label>
+                </div>
+
+                {/* Rak Filter Desktop */}
+                <div className="form-group d-none d-md-inline-block">
+                  <label className="me-2">Rak</label>
+                  <button
+                    className="form-select d-inline-block text-start"
+                    style={{
+                      width: "240px",
+                      borderRadius: "5px",
+                      paddingRight: "29px",
+                      backgroundColor: "white",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      textAlign: "left",
+                    }}
+                    onClick={() => setShowRakModal(true)}
+                  >
+                    {rakList.find((r) => r.value === rakFilter)?.label || "Semua Rak"}
+                  </button>
+                </div>
+
+                <div className="form-group">
+                  <Button variant="success" onClick={() => { setEditBook(null); setShowFormModal(true); }}>
+                    Tambah Buku
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+          {/* Table */}
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+            >
+              <div className="table-responsive shadow-sm rounded">
+                <table className="table table-striped table-hover align-middle mb-0">
+                  <thead className="table-warning">
+                    <tr>
+                      <th>Judul Buku</th>
+                      <th>Pengarang</th>
+                      <th>Penerbit</th>
+                      <th>Tahun</th>
+                      <th>Rak</th>
+                      <th style={{ width: "150px" }}>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.length > 0 ? (
+                      data.map((row) => (
+                        <tr key={row.id}>
+                          <td>{row.judul_buku}</td>
+                          <td>{row.pengarang}</td>
+                          <td>{row.penerbit}</td>
+                          <td>{row.tahun}</td>
+                          <td>{row.rak_buku || "-"}</td>
+                          <td>
+                            <div className="d-flex gap-1">
+                              <Button size="sm" variant="info" onClick={() => setSelectedBook(row)}>
+                                Detail
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="warning"
+                                onClick={() => {
+                                  setEditBook(row);
+                                  setShowFormModal(true);
+                                }}
+                              >
+                                Edit
+                              </Button>
+                              <Button size="sm" variant="danger" onClick={() => confirmDelete(row.id)}>
+                                Hapus
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="text-center py-3">
+                          Tidak ada data
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Mobile Filters */}
+          <div className="d-block d-md-none text-center my-3">
+            <div className="d-flex justify-content-center gap-3 flex-wrap" style={{ flexWrap: "nowrap" }}>
+              <Dropdown
+                as={ButtonGroup}
+                className="fw-semibold text-center"
+                ref={dropdownRef}
+                show={showDropdown}
+                onToggle={(isOpen) => setShowDropdown(isOpen)}
+              >
+                <Dropdown.Toggle
+                  variant="light"
+                  id="dropdown-limit"
+                  className="border border-success rounded-3"
+                  style={{
+                    width: "130px",
+                    textAlign: "center",
+                    fontWeight: "600",
+                    color: "black",
+                  }}
+                >
+                  {limit} Entry
+                </Dropdown.Toggle>
+                <Dropdown.Menu align="end" className="shadow-sm" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                  {[10, 25, 50, 75, 100].map((n) => (
+                    <Dropdown.Item
+                      key={n}
+                      active={limit === n}
+                      onClick={() => {
+                        setLimit(n);
+                        setPage(1);
+                      }}
+                      className="fw-semibold"
+                    >
+                      {n} Entry
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+
+              <button
+                className="fw-semibold text-center"
+                style={{
+                  width: "130px",
+                  border: "2px solid black",
+                  borderRadius: "10px",
+                  padding: "5px 25px",
+                  backgroundColor: "white",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                onClick={() => setShowRakModal(true)}
+              >
+                Rak : {rakList.find((r) => r.value === rakFilter)?.label || "-"}
+              </button>
+            </div>
+            <p className="text-success mt-2 fw-semibold" style={{ fontSize: "15px" }}>
+              Rak Buku : {rakList.find((r) => r.value === rakFilter)?.label || "Semua Rak"}
+            </p>
+          </div>
+
+          {/* Mobile View */}
+          <div className="mobile-view">
+            {data.length > 0 ? (
+              data.map((row) => (
+                <div key={row.id} className="mobile-book-card">
+                  <div className="mobile-book-row">
+                    <div className="mobile-rak">
+                      <span>{row.rak_buku || "-"}</span>
+                    </div>
+                    <div className="mobile-book-info">
+                      <div className="mobile-book-title clickable" onClick={() => setSelectedBook(row)}>
+                        {row.judul_buku}
+                      </div>
+                      <div className="mobile-book-meta">
+                        | {row.pengarang} | {row.penerbit} | {row.tahun}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p style={{ textAlign: "center" }}>Tidak ada data</p>
+            )}
+          </div>
+
+          {/* Pagination */}
+          <div className="pagination">
+            <button
+              disabled={page <= 1}
+              onClick={() => setPage(page - 1)}
+              className={`page-btn ${page <= 1 ? "btn-disabled" : ""}`}
+            >
+              ⬅
+            </button>
+            {renderPageNumbers()}
+            <button
+              disabled={page >= totalPages}
+              onClick={() => setPage(page + 1)}
+              className={`page-btn ${page >= totalPages ? "btn-disabled" : ""}`}
+            >
+              ➡
+            </button>
+          </div>
+
+          {selectedBook && (
+            <BookDetailModal book={selectedBook} onClose={() => setSelectedBook(null)} />
+          )}
+
+          {showFormModal && (
+            <BookFormModal
+              book={editBook}
+              onClose={() => {
+                setShowFormModal(false);
+                setEditBook(null);
+              }}
+              onSave={(formData) => {
+                const saveData = async () => {
+                  try {
+                    let res;
+                    if (editBook) {
+                      res = await fetch(`http://localhost:3000/admin/api/buku/${editBook.id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify(formData),
+                      });
+                    } else {
+                      res = await fetch("http://localhost:3000/admin/api/buku", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify(formData),
+                      });
+                    }
+                    if (res.ok) {
+                      setNotification({ show: true, variant: "success", message: editBook ? "Buku berhasil diupdate" : "Buku berhasil ditambahkan" });
+                      setShowFormModal(false);
+                      setEditBook(null);
+                      // Reload data
+                      let url = `http://localhost:3000/api/katalog?page=${page}&limit=${limit}`;
+                      if (query) url += `&q=${encodeURIComponent(query)}`;
+                      if (rakFilter) url += `&rak=${encodeURIComponent(rakFilter)}`;
+                      fetch(url, { credentials: "include" })
+                        .then((res) => res.json())
+                        .then((json) => {
+                          setData(json.data);
+                          setTotalPages(json.total_pages);
+                        });
+                    } else {
+                      setNotification({ show: true, variant: "danger", message: "Gagal menyimpan buku" });
+                    }
+                  } catch (err) {
+                    setNotification({ show: true, variant: "danger", message: "Error: " + err });
+                  }
+                };
+                saveData();
+              }}
+            />
+          )}
+          {notification.show && (
+            <div
+              className={`alert alert-${notification.variant}`}
+              role="alert"
+              style={{
+                position: 'fixed',
+                top: '10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 9999,
+                minWidth: '300px',
+                textAlign: 'center'
+              }}
+            >
+              {notification.message}
+            </div>
+          )}
+
+          <RakModal
+            show={showRakModal}
+            onHide={() => setShowRakModal(false)}
+            rakList={rakList}
+            rakFilter={rakFilter}
+            onSelect={handleRakSelect}
+          />
+
+          {showDeleteModal && (
+            <Modal show={showDeleteModal} onHide={handleCancelDelete}>
+              <Modal.Header closeButton>
+                <Modal.Title>Konfirmasi Hapus</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>Yakin ingin menghapus buku ini?</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCancelDelete}>
+                  Batal
+                </Button>
+                <Button variant="danger" onClick={handleConfirmDelete}>
+                  Hapus
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
+
+          {notification.show && (
+            <div
+              className={`alert alert-${notification.variant}`}
+              role="alert"
+              style={{
+                position: 'fixed',
+                top: '10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 9999,
+                minWidth: '300px',
+                textAlign: 'center'
+              }}
+            >
+              {notification.message}
+            </div>
+          )}
+    </div>
+  );
+}
+
+export default AdminPage;
+

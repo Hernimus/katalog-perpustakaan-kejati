@@ -1,0 +1,196 @@
+/* Empty / Loading */
+.rak-empty,
+.rak-loading {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Modal Overlay */
+.rak-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Modal Box */
+.rak-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: popIn 0.25s ease;
+}
+
+/* Modal Header */
+.rak-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.rak-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.rak-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+.rak-close:hover {
+  color: #000;
+}
+
+/* Modal Body */
+.rak-modal-body {
+  padding: 1.25rem;
+}
+
+.rak-form-group {
+  margin-bottom: 1rem;
+}
+
+.rak-form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.rak-form-group input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.rak-form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Modal Footer */
+.rak-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  background: #f9f9f9;
+  padding: 0.8rem 1.25rem;
+  border-top: 1px solid #ddd;
+}
+
+.rak-delete-modal {
+  max-width: 400px;
+  text-align: center;
+}
+
+.rak-delete-modal p {
+  margin: 15px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.rak-delete-content h3 {
+  font-size: 1.3rem;
+  color: #d32f2f;
+  margin-bottom: 0.5rem;
+}
+
+.rak-delete-content p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.rak-delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* 🔔 Toast Notification */
+.rak-alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.rak-alert-success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.rak-alert-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.rak-alert-warning {
+  background-color: #ffc107;
+  color: #222;
+}
+/* .rak-alert {
+  position: fixed;
+  top: 20px;
+  right: 50%;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  animation: fadeInOut 3s ease forwards;
+  z-index: 2000;
+}
+
+.rak-alert-success {
+  background-color: #2ecc71;
+}
+
+.rak-alert-error {
+  background-color: #e74c3c;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10%, 90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+} */
+
+/* Animation */
+@keyframes popIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

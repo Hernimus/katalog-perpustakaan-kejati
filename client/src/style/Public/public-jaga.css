@@ -1,0 +1,123 @@
+
+.public-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 1rem;
+}
+
+section input.form-control {
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+section input.form-control:focus {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  border-color: #fff;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.page-btn {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+}
+
+.container {
+  max-width: 1000px;
+}
+
+@media (max-width: 768px) {
+  .mobile-view {
+    padding: 10px;
+  }
+
+  .mobile-book-meta {
+    font-size: 12px;
+    color: #444;
+    margin-top: 3px;
+  }
+
+  .mobile-book-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mobile-book-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #000;
+  }
+}
+
+
+
+/* === FILTER BAR (desktop) === */
+.d-flex.flex-wrap.gap-2.mb-3.align-items-center {
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 14px;
+  margin-right: 8px;
+  color: #333;
+}
+
+.form-group .form-select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-group .form-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+/* === Konsistensi dengan Pagination === */
+.page-btn,
+.form-group .form-select {
+  border-radius: 4px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .d-flex.flex-wrap.gap-2.mb-3.align-items-center {
+    display: none !important;
+  }
+}
